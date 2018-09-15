@@ -26,8 +26,8 @@ namespace Walterlv.Demo.Roslyn
         MSBuildWorkspace m_workspace;
         public async Task RunAsync()
         {
-            MSBuildWorkspace m_workspace = MSBuildWorkspace.Create();
-            Solution solution = await m_workspace.OpenSolutionAsync(@"D:\Github\gamert\TestRoslyn\Samples\ConsoleApp1\ConsoleApp1.sln");
+            m_workspace = MSBuildWorkspace.Create();
+            Solution solution = await m_workspace.OpenSolutionAsync(@"G:\GitHub\dotnet\GitHubRoslynTest\Samples\ConsoleApp1\ConsoleApp1.sln");
             Project project = solution.Projects.First(x => x.Name == "ConsoleApp1");
             Document document = project.Documents.First(x =>
                 x.Name.Equals("ACTAnimConfig.cs", StringComparison.InvariantCultureIgnoreCase));
@@ -37,7 +37,7 @@ namespace Walterlv.Demo.Roslyn
             if(TestAnim!=null)
             {
                 var newName = "_ZTest" + TestAnim.Identifier;
-                RenameAsync(document, TestAnim, newName);
+                await RenameAsync(document, TestAnim, newName);
             }
             //var text = node.GetText();
             //File.WriteAllText(document.FilePath, text.ToString());
@@ -58,6 +58,12 @@ namespace Walterlv.Demo.Roslyn
             var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, typeSymbol, newName, optionSet, cancellationToken).ConfigureAwait(false);
             bool b = m_workspace.TryApplyChanges(newSolution);
             //check...
+            /*
+             * Assets/Editor/ACTAnimation/ACTAnimConfigInspector.cs(33,25): 
+             * error CS1061: Type `ACTAnimConfig' does not contain a definition for `TestAnim' 
+             * and no extension method `TestAnim' of type `ACTAnimConfig' could be found. 
+             * Are you missing an assembly reference?
+             */
         }
 
         //"ACTAnimConfig"
@@ -85,6 +91,7 @@ namespace Walterlv.Demo.Roslyn
             return null;
         }
 
+        //find the named ClassDeclarationSyntax
         class TypeParameterVisitor : CSharpSyntaxRewriter
         {
             string m_key;
@@ -106,3 +113,4 @@ namespace Walterlv.Demo.Roslyn
 
 
 }
+ 
