@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Rename;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,11 @@ namespace Walterlv.Demo.Roslyn
         public async Task RunAsync()
         {
             m_workspace = MSBuildWorkspace.Create();
-            Solution solution = await m_workspace.OpenSolutionAsync(@"G:\GitHub\dotnet\GitHubRoslynTest\Samples\ConsoleApp1\ConsoleApp1.sln");
+
+            String rootPath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            String projPath = Path.GetFullPath(@"..\..\..\") + @"Samples\ConsoleApp1\ConsoleApp1.sln";
+            //@"G:\GitHub\dotnet\GitHubRoslynTest\Samples\ConsoleApp1\ConsoleApp1.sln"
+            Solution solution = await m_workspace.OpenSolutionAsync(projPath);
             Project project = solution.Projects.First(x => x.Name == "ConsoleApp1");
             Document document = project.Documents.First(x =>
                 x.Name.Equals("ACTAnimConfig.cs", StringComparison.InvariantCultureIgnoreCase));
